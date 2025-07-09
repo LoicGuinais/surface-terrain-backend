@@ -17,7 +17,8 @@ COPY . /app
 
 # Install Python dependencies
 RUN pip3 install --upgrade pip
-RUN pip3 install fastapi uvicorn pandas geopandas requests
+RUN pip3 install fastapi uvicorn pandas==2.1.4 geopandas requests
+
 
 # Expose port
 EXPOSE 10000

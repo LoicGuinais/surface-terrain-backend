@@ -3,4 +3,3 @@ uvicorn==0.30.0
 pandas==2.1.4
 geopandas==0.14.4
 requests==2.32.3
-

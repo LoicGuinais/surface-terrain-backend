@@ -1,27 +1,29 @@
-# Use a geospatial base image
-FROM ghcr.io/osgeo/gdal:ubuntu-full-3.8.0
+# Use smaller geospatial base image
+FROM osgeo/gdal:ubuntu-small-3.8.0
+
+# Install Python 3.11 and set as default
+RUN apt-get update && \
+    apt-get install -y python3.11 python3.11-venv python3-pip && \
+    ln -sf /usr/bin/python3.11 /usr/bin/python3 && \
+    ln -sf /usr/bin/pip3 /usr/bin/pip
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Install Python & pip (already present, just update)
-RUN apt-get update && apt-get install -y python3-pip
-
-# Create working directory
+# Create app directory
 WORKDIR /app
 
-# Copy files
+# Copy project files
 COPY . /app
 
 # Install Python dependencies
-RUN pip3 install --upgrade pip
-RUN pip3 install fastapi uvicorn pandas==2.1.4 geopandas requests
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-
-# Expose port
+# Expose port for FastAPI
 EXPOSE 10000
 
-# Start the FastAPI app
+# Run the FastAPI server
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]

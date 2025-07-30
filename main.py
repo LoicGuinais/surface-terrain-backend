@@ -1,10 +1,21 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import geopandas as gpd
 import gzip, json, os, requests, io
+from datetime import datetime  # ⬅️ NEW
 
 app = FastAPI()
+
+# --- Middleware to log request metadata ---
+@app.middleware("http")
+async def log_request_metadata(request: Request, call_next):
+    now = datetime.now().isoformat()
+    real_ip = request.headers.get("X-Forwarded-For", request.client.host)
+    ua = request.headers.get("User-Agent", "N/A")
+    referer = request.headers.get("Referer", "N/A")
+    print(f"[{now}] IP={real_ip} | UA={ua} | REF={referer} | PATH={request.url.path} | QUERY={request.url.query}")
+    return await call_next(request)
 
 # --- CORS Middleware ---
 app.add_middleware(
